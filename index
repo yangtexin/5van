@@ -347,7 +347,7 @@
                     <h2 class="txt-bold">PHỤ NỮ</h2>
                 </div>
 
-                <img src="taoanhdep_xoa_nen_anh_66065.png" alt="Người chúc" class="person-img" id="personDisplay">
+                <img src="1.png" alt="Người chúc" class="person-img" id="personDisplay">
 
                 <div class="bottom-flap">
                     <svg class="flap-svg" viewBox="0 0 600 290" preserveAspectRatio="none">
@@ -433,6 +433,7 @@
         window.addEventListener('load', scaleCard);
 
         // Tải ảnh về
+
         document.getElementById('btnDownload').addEventListener('click', function() {
             const card = document.getElementById('cardOuter');
             const originalTransform = card.style.transform;
