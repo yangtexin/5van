@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thiệp chúc mừng 8/3 - Bản hoàn chỉnh</title>
+    
+    <!-- Nhúng thư viện tải ảnh html2canvas -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
+    <!-- Nhúng font chữ y hệt bản gốc -->
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@800;900&family=Roboto:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-page: #f0f2f5;      /* Màu nền trang web */
+            --bg-outer: #cd2b6b;     /* Màu viền ngoài cùng của thiệp */
+            --bg-card-top: #fce3ee;  /* Màu hồng nhạt nửa trên */
+            --text-pink: #d82b68;    /* Màu chữ hồng đậm */
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--bg-page);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* --- BẢNG ĐIỀU KHIỂN --- */
+        .controls-panel {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            z-index: 100;
+            width: 100%;
+            max-width: 650px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            flex: 1;
+            min-width: 180px;
+        }
+
+        .input-group label {
+            font-size: 13px;
+            font-weight: bold;
+            color: #555;
+            text-transform: uppercase;
+        }
+
+        .input-group input[type="text"] {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 15px;
+            outline: none;
+        }
+
+        /* Thanh trượt chỉnh ảnh */
+        .slider-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            width: 100%;
+            background: #f9f9f9;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #eee;
+        }
+        .slider-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+        .slider-row input[type="range"] { flex: 1; }
+
+        .btn-upload {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 10px;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            flex: 1;
+            min-width: 180px;
+            border: none;
+            transition: background 0.2s;
+        }
+        
+        .btn-upload:hover { background-color: #45a049; }
+
+        .btn-upload input[type=file] {
+            position: absolute;
+            left: 0; top: 0;
+            opacity: 0;
+            width: 100%; height: 100%;
+            cursor: pointer;
+        }
+
+        .btn-download {
+            background-color: var(--text-pink);
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            flex: 1;
+            min-width: 180px;
+            transition: opacity 0.2s;
+        }
+        .btn-download:hover { opacity: 0.9; }
+
+        .warning-text {
+            width: 100%;
+            text-align: center;
+            font-size: 13px;
+            color: var(--text-pink);
+            font-style: italic;
+            margin-top: -5px;
+            margin-bottom: 5px;
+        }
+
+        /* --- KHU VỰC THIỆP CHÍNH --- */
+        .card-scale-wrapper {
+            width: 100%;
+            max-width: 650px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .card-outer {
+            width: 650px;
+            height: 650px;
+            background-color: var(--bg-outer);
+            padding: 25px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            position: relative;
+            flex-shrink: 0;
+            transform-origin: top center;
+        }
+
+        .card {
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg-card-top);
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+        }
+
+        .watermark {
+            position: absolute;
+            top: 320px;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 280px;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900;
+            color: white;
+            opacity: 0.7;
+            letter-spacing: -5px;
+            z-index: 1;
+            white-space: nowrap;
+            pointer-events: none;
+        }
+
+        .header-text {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            padding-top: 40px;
+            pointer-events: none;
+        }
+
+        .txt-cursive {
+            font-family: 'Great Vibes', cursive;
+            font-size: 85px;
+            color: var(--text-pink);
+            margin: 0;
+            line-height: 0.6;
+            transform: rotate(-3deg);
+        }
+
+        .txt-bold {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 60px;
+            font-weight: 800;
+            color: var(--text-pink);
+            margin: 15px 0 0 0;
+            letter-spacing: 1px;
+        }
+
+        .person-img {
+            position: absolute;
+            bottom: 120px;
+            left: 50%;
+            transform: translateX(-50%) translateY(var(--img-y, 0px)) scale(var(--img-scale, 1));
+            transform-origin: bottom center;
+            width: 250px;
+            z-index: 3;
+            pointer-events: none;
+        }
+
+        .bottom-flap {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 290px;
+            z-index: 4;
+            pointer-events: none;
+        }
+
+        .flap-svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0px -8px 12px rgba(0,0,0,0.15));
+        }
+
+        .content {
+            position: absolute;
+            top: 90px;
+            left: 45px;
+            right: 45px;
+            text-align: center;
+            z-index: 5;
+            pointer-events: auto;
+        }
+
+        .divider-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .divider-line {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            color: var(--text-pink);
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .divider-line::before, .divider-line::after {
+            content: '';
+            height: 1px;
+            width: 110px;
+            background-color: var(--text-pink);
+        }
+
+        .divider-flower { margin-top: -3px; }
+
+        .message {
+            font-size: 20px;
+            color: var(--text-pink);
+            font-style: italic;
+            line-height: 1.5;
+            margin: 0 0 10px 0;
+            font-weight: 400;
+        }
+
+        .signature {
+            font-size: 19px;
+            color: var(--text-pink);
+            font-style: italic;
+            font-weight: 500;
+            margin: 0;
+        }
+
+        .highlight { font-weight: 500; }
+    </style>
+</head>
+<body>
+
+    <!-- BẢNG ĐIỀU KHIỂN -->
+    <div class="controls-panel">
+        <div class="input-group">
+            <label>Tên người chúc (Anh...)</label>
+            <input type="text" id="inputSender" value="5van">
+        </div>
+        <div class="input-group">
+            <label>Tên người nhận</label>
+            <input type="text" id="inputReceiver" value="Tú Sena">
+        </div>
+
+        <!-- Nút chọn ảnh -->
+        <div class="btn-upload">
+            📷 Chọn ảnh ghép
+            <input type="file" id="uploadImage" accept="image/*">
+        </div>
+        
+        <div class="warning-text">⚠️ Lưu ý: Nếu muốn đổi ảnh, bạn hãy tự tách nền ảnh trước khi tải lên nhé!</div>
+
+        <!-- Công cụ căn chỉnh ảnh -->
+        <div class="slider-group">
+            <label style="font-size: 13px; font-weight: bold; color: #555;">Kéo để chỉnh ảnh vừa khít viền vát nhọn:</label>
+            <div class="slider-row">
+                <span style="font-size: 12px; width: 60px;">To / Nhỏ:</span>
+                <input type="range" id="scaleSlider" min="0.5" max="2.5" step="0.01" value="1.2">
+            </div>
+            <div class="slider-row">
+                <span style="font-size: 12px; width: 60px;">Lên / Xuống:</span>
+                <input type="range" id="ySlider" min="-100" max="150" step="1" value="20">
+            </div>
+        </div>
+
+        <button class="btn-download" id="btnDownload">📥 Tải thiệp về máy</button>
+    </div>
+
+    <!-- KHU VỰC THIỆP -->
+    <div class="card-scale-wrapper" id="scaleWrapper">
+        <div class="card-outer" id="cardOuter">
+            <div class="card">
+                <div class="watermark">8 3</div>
+
+                <div class="header-text">
+                    <h1 class="txt-cursive">Ngày Quốc tế</h1>
+                    <h2 class="txt-bold">PHỤ NỮ</h2>
+                </div>
+
+                <img src="1.png" alt="Người chúc" class="person-img" id="personDisplay">
+
+                <div class="bottom-flap">
+                    <svg class="flap-svg" viewBox="0 0 600 290" preserveAspectRatio="none">
+                        <path d="M 0,45 L 300,95 L 600,45 L 600,290 L 0,290 Z" fill="white" />
+                        <path d="M 18,60 L 300,107 L 582,60 L 582,272 L 18,272 Z" fill="none" stroke="#d82b68" stroke-width="1.2" opacity="0.6"/>
+                    </svg>
+
+                    <div class="content">
+                        <div class="divider-container">
+                            <div class="divider-line">&lt;&lt; • ✿ • &gt;&gt;</div>
+                            <div class="divider-flower">
+                                <svg width="24" height="16" viewBox="0 0 24 16" fill="#d82b68">
+                                    <path d="M12,16 C5,16 0,8 0,4 C0,0 6,4 12,8 C18,4 24,0 24,4 C24,8 19,16 12,16 Z"/>
+                                </svg>
+                            </div>
+                        </div>
+                        
+                        <p class="message">
+                            Anh <span class="highlight" id="displaySender">5van</span> chúc <span class="highlight" id="displayReceiver">Tú Sena</span> ngày 8 tháng 3 vui vẻ, ngày càng xinh đẹp và gặp nhiều may mắn trong cuộc sống.
+                        </p>
+                        <p class="signature">From Nợ Tộc with love &lt;3</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPT XỬ LÝ -->
+    <script>
+        // Cập nhật Text
+        const inSender = document.getElementById('inputSender');
+        const inReceiver = document.getElementById('inputReceiver');
+        const outSender = document.getElementById('displaySender');
+        const outReceiver = document.getElementById('displayReceiver');
+
+        function updateText() {
+            outSender.textContent = inSender.value || "...";
+            outReceiver.textContent = inReceiver.value || "...";
+        }
+        inSender.addEventListener('input', updateText);
+        inReceiver.addEventListener('input', updateText);
+
+        // Cập nhật vị trí ảnh
+        const scaleSlider = document.getElementById('scaleSlider');
+        const ySlider = document.getElementById('ySlider');
+        const personDisplay = document.getElementById('personDisplay');
+
+        function updateImgTransform() {
+            personDisplay.style.setProperty('--img-scale', scaleSlider.value);
+            personDisplay.style.setProperty('--img-y', ySlider.value + 'px');
+        }
+        scaleSlider.addEventListener('input', updateImgTransform);
+        ySlider.addEventListener('input', updateImgTransform);
+        updateImgTransform();
+
+        // XỬ LÝ TẢI ẢNH TRỰC TIẾP (Đã bỏ tách nền AI)
+        const uploadImage = document.getElementById('uploadImage');
+
+        uploadImage.addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const objectURL = URL.createObjectURL(file);
+            personDisplay.src = objectURL;
+        });
+
+        // Co giãn thiệp trên điện thoại
+        function scaleCard() {
+            const wrapper = document.getElementById('scaleWrapper');
+            const cardOuter = document.getElementById('cardOuter');
+            const wrapperWidth = wrapper.offsetWidth;
+            
+            if (wrapperWidth < 650) {
+                const scale = wrapperWidth / 650;
+                cardOuter.style.transform = `scale(${scale})`;
+                wrapper.style.height = `${650 * scale}px`;
+            } else {
+                cardOuter.style.transform = `scale(1)`;
+                wrapper.style.height = `650px`;
+            }
+        }
+        window.addEventListener('resize', scaleCard);
+        window.addEventListener('load', scaleCard);
+
+        // Tải ảnh về
+
+        document.getElementById('btnDownload').addEventListener('click', function() {
+            const card = document.getElementById('cardOuter');
+            const originalTransform = card.style.transform;
+            card.style.transform = 'scale(1)';
+            
+            html2canvas(card, {
+                scale: 2,
+                useCORS: true,
+                backgroundColor: '#cd2b6b'
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = 'Thiep_8_3_Hoan_Chinh.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+                card.style.transform = originalTransform;
+            });
+        });
+    </script>
+</body>
+</html>
